@@ -21,7 +21,7 @@ placing the output in `out.png`:
 Then to reverse this process and extract the hidden image
 to `extracted.png`:
 
-    unhide "out.png" > "extracted.png"
+    unhide "out.png" | pamtopng > "extracted.png"
 
 All output images are written to the standard output.
 Either argument to `hide` (but not both)
