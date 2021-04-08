@@ -1,0 +1,47 @@
+#!/bin/sh
+
+set -e
+
+if [ "$#" -ne 2 ]; then
+	printf 'usage: hide base secret\n' >&2
+	exit 1
+fi
+
+tmpdir="$(mktemp -d)"
+
+cleanup () {
+	if [ -d "${tmpdir}" ]; then
+		rm -r "${tmpdir}"
+	fi
+}
+
+trap cleanup 0
+
+anytopnm "$1" | pamdepth 255 > "${tmpdir}/base.ppm"
+anytopnm "$2" | pamdepth 255 > "${tmpdir}/secret.ppm"
+
+cd "${tmpdir}"
+w1=$(pamfile -machine base.ppm   | cut -d: -f2 | cut -d' ' -f4)
+h1=$(pamfile -machine base.ppm   | cut -d: -f2 | cut -d' ' -f5)
+w2=$(pamfile -machine secret.ppm | cut -d: -f2 | cut -d' ' -f4)
+h2=$(pamfile -machine secret.ppm | cut -d: -f2 | cut -d' ' -f5)
+w="$w1"
+h="$h1"
+if [ "$w2" -gt "$w1" ]; then w="$w2"; fi
+if [ "$h2" -gt "$h1" ]; then h="$h2"; fi
+ppmmake -maxval 255 rgb:00/00/00 "$w" "$h" | ppmtoppm > bg.ppm
+pamcomp -align=center -valign=middle base.ppm bg.ppm \
+| ppmtoppm -plain \
+| sed 's/  /\n/g' > base-bg.ppm
+pamcomp -align=center -valign=middle secret.ppm bg.ppm \
+| ppmtoppm -plain \
+| sed 's/  /\n/g' > secret-bg.ppm
+
+paste base-bg.ppm secret-bg.ppm \
+| awk 'NF < 6 {for (i=1; i<=NF/2; i++){printf "%s ", $i}; print ""; next}\
+       {r = int($1/8)*8+int($4/32);\
+        g = int($2/8)*8+int($6/32);\
+        b = int($3/16)*16+int($5/16);\
+        printf "%d %d %d\n", r, g, b
+       }' \
+| ppmtoppm

@@ -1,0 +1,45 @@
+.TH HIDE 1 "2021-04-07" "Version 0.1" "Steganography"
+.SH NAME
+hide \- hide images within other images
+.SH SYNOPSIS
+.B hide
+.I carrier
+.I secret
+.SH DESCRIPTION
+Stuff the high order bits from each pixel of
+.I secret
+into the corresponding pixels of
+.IR carrier .
+If
+.B -
+is provided as either input,
+the standard input is used.
+At most one image may come from the standard input.
+The result is written to the standard output
+as a binary-mode PPM file.
+.PP
+If the images are not the same size,
+black borders are added in order to make them match.
+.PP
+Specifically, the highest-order bits of each pixel of
+.I secret
+replace the lowest-order bits of the corresponding pixels of
+.IR carrier .
+Three bits from the red channel go into the red channel,
+four from the green go into the blue,
+and three from the blue go into the green.
+.
+.SH OPTIONS
+None.
+.SH "EXIT STATUS"
+.TP
+.B 0
+Successful program execution
+.TP
+.B ">0"
+An error occurred.
+.
+.SH "SEE ALSO"
+.BR display (1),
+.BR pnmtopng (1),
+.BR ppm (5)

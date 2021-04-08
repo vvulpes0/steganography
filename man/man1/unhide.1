@@ -1,0 +1,37 @@
+.TH UNHIDE 1 "2021-04-07" "Version 0.1" "Steganography"
+.SH NAME
+unhide \- extract images hidden within other images
+.SH SYNOPSIS
+.B unhide
+.I file
+.SH DESCRIPTION
+Extract the lower-order bits of each pixel of
+.I file
+into the corresponding pixels of the output.
+If the input is
+.B -
+or is not provided,
+the standard input is used.
+The result is written to the standard output
+as a binary-mode PPM file.
+.PP
+Specifically,
+three bits from the red channel go into the red channel,
+four from the blue go into the green,
+and three from the green go into the blue.
+The result is subsequently renormalized.
+.
+.SH OPTIONS
+None.
+.SH "EXIT STATUS"
+.TP
+.B 0
+Successful program execution
+.TP
+.B ">0"
+An error occurred.
+.
+.SH "SEE ALSO"
+.BR display (1),
+.BR pnmtopng (1),
+.BR ppm (5)

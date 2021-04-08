@@ -1,0 +1,13 @@
+#!/bin/sh
+
+anytopnm "${1:--}" \
+| pamdepth 255 \
+| ppmtoppm -plain \
+| sed 's/  /\n/g' \
+| awk 'NF < 3 {print; next}\
+       {r = ($1 % 8) * 255 / 7;\
+        g = ($3 % 16) * 255 / 15;\
+        b = ($2 % 8) * 255 / 7;\
+        printf "%d %d %d\n", int(r), int(g), int(b);\
+       }' \
+| ppmtoppm
